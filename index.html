@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MT Post-Editing Training Tool | Legal Texts</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Arabic:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; }
+        .serif { font-family: 'EB Garamond', serif; }
+        .arabic-text { font-family: 'Noto Sans Arabic', sans-serif; direction: rtl; }
+        
+        .diff-added { background-color: #dcfce7; text-decoration: none; color: #166534; font-weight: 500; padding: 0.1rem 0.2rem; border-radius: 0.2rem; }
+        .diff-removed { background-color: #fee2e2; text-decoration: line-through; color: #991b1b; font-weight: 500; padding: 0.1rem 0.2rem; border-radius: 0.2rem; }
+        
+        /* Tooltip Styling for Arabic Source Terms */
+        .term-highlight { 
+            border-bottom: 2px dashed #94a3b8; 
+            cursor: help; 
+            position: relative; 
+            color: #334155;
+            font-weight: 700;
+            background-color: #f1f5f9;
+            padding: 0 4px;
+            border-radius: 2px;
+        }
+        .term-highlight .term-tooltip {
+            visibility: hidden;
+            opacity: 0;
+            width: 260px;
+            background-color: #1e293b;
+            color: #f8fafc;
+            text-align: left;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 50;
+            bottom: 130%;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: opacity 0.2s, visibility 0.2s;
+            font-size: 0.85rem;
+            font-family: 'Inter', sans-serif;
+            direction: ltr; /* Keeps English explanation LTR even inside RTL Arabic text */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+            font-weight: 400;
+            line-height: 1.5;
+        }
+        .term-highlight .term-tooltip::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #1e293b transparent transparent transparent;
+        }
+        .term-highlight:hover .term-tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen pb-20">
+
+    <!-- 1. First Landing Page -->
+    <div id="landing-page" class="min-h-screen flex items-center justify-center p-6">
+        <div class="max-w-3xl w-full bg-white p-12 rounded-sm shadow-md border border-slate-300 text-center relative">
+            
+            <div class="absolute top-0 left-0 w-full h-1.5 bg-slate-800 rounded-t-sm"></div>
+            
+            <!-- Main Logo Placeholder -->
+            <div class="w-20 h-20 mx-auto mb-6 rounded-full overflow-hidden border border-slate-200 shadow-sm flex items-center justify-center bg-slate-50">
+                <img src="TDC (4).png" alt="Workshop Logo" class="w-full h-full object-cover text-xs text-slate-400" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjY2JkNWUxIiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTIyIDEyYzAgNS41MjMtNC40NzcgMTAtMTAgMTBTMiAxNy41MjMgMiAxMnM0LjQ3Ny0xMCAxMC0xMCAxMCA0LjQ3NyAxMCAxMHoiLz48cGF0aCBkPSJNOCAxMmg4TTggaDRtNCAwaDRNMCAwaDI0djI0SDB6IiBzdHJva2U9Im5vbmUiLz48L3N2Zz4='">
+            </div>
+
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4 tracking-tight">MT Post-Editing Training Environment</h1>
+            <h2 class="text-xl font-semibold text-slate-600 mb-8 uppercase tracking-widest">Legal Translation Corpus</h2>
+            
+            <!-- Academic Citation Format -->
+            <div class="mb-10 text-slate-600 serif text-lg md:text-xl border-b border-slate-100 pb-8">
+                <p>Methodological framework derived from:</p>
+                <p class="italic text-slate-800 mt-2 font-semibold">O’Brien, S. (2023). "How to deal with errors in MT: Post-editing".</p>
+            </div>
+            
+            <!-- Author Profile Section -->
+            <div class="my-8">
+                <p class="text-xs text-slate-400 uppercase tracking-widest mb-6 font-semibold">Developed & Designed By</p>
+                
+                <a href="https://instagram.com/imnotachraf" target="_blank" rel="noopener noreferrer" class="group inline-flex flex-col items-center transition-all">
+                    <div class="w-24 h-24 rounded-full overflow-hidden border-4 border-slate-100 group-hover:border-slate-300 transition-colors mb-4 shadow-sm bg-slate-50 flex items-center justify-center">
+                        <img src="WhatsApp Image 2026-04-27 at 18.29.44.jpeg" alt="Mohammed Achraf Sadeq" class="w-full h-full object-cover text-xs text-slate-400" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjY2JkNWUxIiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTIwIDIxdi0yYTQgNCAwIDAwLTQtNEg4YTQgNCAwIDAwLTQgNHYyIi8+PGNpcmNsZSBjeD0iMTIiIGN5PSI3IiByPSI0Ii8+PC9zdmc+'">
+                    </div>
+                    
+                    <h3 class="text-xl font-bold text-slate-800 group-hover:text-slate-600 transition-colors tracking-tight">Mohammed Achraf Sadeq</h3>
+                    <p class="text-sm text-slate-500 mt-1.5 flex items-center gap-1.5 group-hover:text-slate-400 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                        Instagram Profile
+                    </p>
+                </a>
+            </div>
+
+            <button onclick="goToSegmentSelection()" class="mt-4 bg-slate-800 hover:bg-slate-900 text-white px-10 py-3.5 rounded text-sm font-semibold uppercase tracking-wider shadow-sm transition-all active:scale-95 w-full sm:w-auto">
+                Start Workshop
+            </button>
+        </div>
+    </div>
+
+    <!-- 2. Segment Selection Page -->
+    <div id="segment-selection-page" class="hidden min-h-screen p-6 max-w-5xl mx-auto pt-12">
+        <div class="mb-10 flex justify-between items-end">
+            <div>
+                <h2 class="text-3xl font-bold text-slate-900 tracking-tight">Legal Segments</h2>
+                <p class="text-slate-600 mt-2">Select a case study to begin post-editing.</p>
+            </div>
+            <button onclick="location.reload()" class="text-sm font-semibold text-slate-500 hover:text-slate-800 underline underline-offset-4">Return Home</button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="segment-grid">
+            <!-- Dynamically injected via JS -->
+        </div>
+    </div>
+
+    <!-- 3. Workshop Interface -->
+    <div id="workshop-interface" class="hidden">
+
+    <header class="bg-slate-900 text-white py-6 px-6 shadow-sm border-b border-slate-800 mb-8">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <div>
+                <h1 class="text-xl font-bold tracking-tight">MT Post-Editing Trainer</h1>
+                <p class="mt-1 text-slate-400 text-xs font-medium uppercase tracking-widest">Legal Domain</p>
+            </div>
+            <div class="text-right flex items-center gap-6">
+                <div class="text-right">
+                    <span class="text-xs text-slate-500 uppercase tracking-widest block mb-1">Segment</span>
+                    <span class="text-lg font-bold text-slate-200"><span id="segment-current">1</span> / 6</span>
+                </div>
+                <button onclick="backToSegments()" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded text-xs font-semibold uppercase tracking-wider transition-colors border border-slate-600">
+                    Menu
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Left: Instructions -->
+        <div class="lg:col-span-1 space-y-6">
+            <section id="pe-guidelines" class="bg-slate-50 p-6 rounded-lg border border-slate-200 shadow-sm">
+                <h2 class="text-sm font-bold uppercase tracking-widest mb-3 text-slate-800">Current Task: Light PE</h2>
+                <p class="text-sm text-slate-600 mb-4 italic leading-relaxed">"Aim for 'good enough'. Fix only errors that distort the meaning. Don't worry about style or flow."</p>
+                <div class="space-y-2">
+                    <div class="flex items-center gap-2 text-xs text-slate-700 font-medium">
+                        <div class="w-1.5 h-1.5 rounded-full bg-slate-500"></div> Accuracy is Priority #1
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-slate-700 font-medium">
+                        <div class="w-1.5 h-1.5 rounded-full bg-slate-500"></div> Minimize keystrokes
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Right: The Editor -->
+        <div class="lg:col-span-2 space-y-6">
+            <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-slate-200">
+                <!-- Toolbar -->
+                <div class="bg-slate-50 border-b border-slate-200 p-4 flex justify-between items-center">
+                    <div class="flex gap-3">
+                        <span class="bg-white border border-slate-200 px-3 py-1.5 rounded text-xs text-slate-600 font-medium shadow-sm">Time: <span id="timer" class="font-mono font-bold text-slate-800">00:00</span></span>
+                        <span class="bg-white border border-slate-200 px-3 py-1.5 rounded text-xs text-slate-600 font-medium shadow-sm">Keys: <span id="k-count" class="font-mono font-bold text-slate-800">0</span></span>
+                    </div>
+                    <div class="flex gap-1 bg-slate-200 p-1 rounded">
+                        <button onclick="switchMode('light')" id="btn-light" class="px-4 py-1.5 rounded text-xs font-bold bg-white text-slate-800 shadow-sm transition-all tracking-wide">LIGHT PE</button>
+                        <button onclick="switchMode('full')" id="btn-full" class="px-4 py-1.5 rounded text-xs font-bold text-slate-500 hover:text-slate-800 transition-all tracking-wide">FULL PE</button>
+                    </div>
+                </div>
+
+                <!-- Editor Workspace -->
+                <div class="p-8">
+                    <div class="mb-8">
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center justify-between">
+                            <span>Source Text (Arabic)</span>
+                            <span class="text-indigo-400 font-normal normal-case tracking-normal">Hover over highlighted terms for explanation</span>
+                        </label>
+                        <div id="source-text" class="arabic-text p-5 bg-slate-50 rounded-md text-slate-800 text-xl leading-loose border-r-4 border-slate-400">
+                            <!-- Injected -->
+                        </div>
+                    </div>
+
+                    <div class="mb-8">
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Machine Output (Target: English)</label>
+                        <div id="raw-mt-view" class="p-4 bg-slate-50 rounded-md text-slate-700 text-lg leading-relaxed border-l-4 border-slate-400 italic">
+                            <!-- Injected -->
+                        </div>
+                    </div>
+
+                    <div class="mb-8">
+                        <label class="block text-xs font-bold text-slate-800 uppercase tracking-widest mb-3">Your Post-Edited Version</label>
+                        <textarea id="editor" 
+                            class="w-full p-5 text-lg bg-white border-2 border-slate-200 rounded-md focus:border-slate-800 focus:ring-0 transition-all leading-relaxed min-h-[140px] resize-y" 
+                            spellcheck="false" placeholder="Begin typing to start timer..."></textarea>
+                    </div>
+
+                    <div class="flex justify-between items-center pt-2">
+                        <button onclick="resetEditor()" class="text-sm font-medium text-slate-500 hover:text-slate-800 underline decoration-slate-300 underline-offset-4 transition-colors">Revert to Raw MT</button>
+                        <button onclick="submitPE()" class="bg-slate-800 hover:bg-slate-900 text-white px-8 py-3 rounded text-sm font-semibold tracking-wide uppercase shadow-sm transition-all active:scale-95">Run Diagnostic</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div id="results" class="hidden animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-6">
+                
+                <div class="bg-white border border-slate-200 rounded-lg p-6 shadow-sm">
+                    <h4 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4 border-b border-slate-100 pb-2">Analysis Report</h4>
+                    <div id="analysis-text" class="text-slate-700 text-sm leading-relaxed mb-6 space-y-4">
+                        <!-- Injected formatted string here -->
+                    </div>
+                </div>
+                
+                <div class="flex gap-4">
+                    <button onclick="resetEditorState()" class="w-1/3 py-4 bg-slate-200 text-slate-800 rounded font-bold uppercase tracking-widest text-sm shadow-sm hover:bg-slate-300 transition-colors">Retry Segment</button>
+                    <button onclick="backToSegments()" class="w-2/3 py-4 bg-slate-800 text-white rounded font-bold uppercase tracking-widest text-sm shadow-sm hover:bg-slate-900 transition-colors">Back to Menu</button>
+                </div>
+            </div>
+        </div>
+    </main>
+    </div>
+
+    <script>
+        const segments = [
+            {
+                id: 1,
+                title: "Force Majeure",
+                source: "لا يعتبر أي من الطرفين مسؤولاً عن أي تأخير أو فشل في تنفيذ التزاماته بموجب هذا العقد إذا كان ذلك ناتجاً عن <span class='term-highlight'>قوة قاهرة<span class='term-tooltip'><strong>قوة قاهرة (Force Majeure):</strong> A legal concept freeing parties from liability during extraordinary events. MT often literalizes this to 'strong force'.</span></span>.",
+                rawMT: "It is not considered any of the two sides responsible about any lateness or fail in the execution of his promises under this contract if that was resulting from a strong force.",
+                coreConcepts: ["contract", "responsible", "liable", "delay", "fail"],
+                criticalArtifacts: ["strong force"],
+                fluencyArtifacts: ["execution of his promises", "lateness", "fail in", "two sides"],
+                professionals: ["force majeure", "liable", "performing", "fulfilling", "party", "obligations"]
+            },
+            {
+                id: 2,
+                title: "Incorporation",
+                source: "تأسست الشركة <span class='term-highlight'>كشركة ذات مسؤولية محدودة<span class='term-tooltip'><strong>مسؤولية محدودة (Limited Liability):</strong> Corporate structure protecting owners from personal liability. MT mistranslates this as 'limited responsibility'.</span></span> وفقاً لأحكام قانون الشركات.",
+                rawMT: "The company established itself like a company having limited responsibility in agreement to the judgements of the law of the companies.",
+                coreConcepts: ["company", "law", "act"],
+                criticalArtifacts: ["limited responsibility"],
+                fluencyArtifacts: ["law of the companies", "judgements", "established itself"],
+                professionals: ["limited liability", "incorporated", "established", "companies act", "corporate law", "provisions"]
+            },
+            {
+                id: 3,
+                title: "Jurisdiction",
+                source: "<span class='term-highlight'>تختص<span class='term-tooltip'><strong>تختص (Has Jurisdiction):</strong> Legal authority granted to a legal body to administer justice. MT often outputs 'specialize'.</span></span> محاكم دبي حصرياً <span class='term-highlight'>بنظر<span class='term-tooltip'><strong>بنظر (To Hear/Adjudicate):</strong> The formal legal process of reviewing and resolving a dispute. MT literalizes this to 'looking at'.</span></span> أي نزاع ينشأ عن أو يتعلق بهذا الاتفاق.",
+                rawMT: "The courts of Dubai specialize exclusively with the looking at any fight that grows from or has relation to this agreement.",
+                coreConcepts: ["dubai", "court", "agreement"],
+                criticalArtifacts: ["specialize exclusively with", "looking at"],
+                fluencyArtifacts: ["fight that grows", "has relation to"],
+                professionals: ["jurisdiction", "hear", "adjudicate", "settle", "connection with", "arising out of", "dispute"]
+            },
+            {
+                id: 4,
+                title: "IP Infringement",
+                source: "يتعهد الطرف الثاني بعدم <span class='term-highlight'>التعدي<span class='term-tooltip'><strong>التعدي (Infringement):</strong> The action of breaking the terms of a law or IP right. MT may use 'assault' or 'attack'.</span></span> على حقوق الملكية الفكرية الخاصة بالطرف الأول <span class='term-highlight'>بأي شكل من الأشكال<span class='term-tooltip'><strong>بأي شكل من الأشكال (In any manner whatsoever):</strong> A standard legal emphasis phrase. MT often literalizes this idiom.</span></span>.",
+                rawMT: "The second side gives a promise to not assault on the rights of the intellectual property that are special to the first side in any shape from the shapes.",
+                coreConcepts: ["intellectual property", "rights", "party", "side"],
+                criticalArtifacts: ["assault on", "shape from the shapes"],
+                fluencyArtifacts: ["gives a promise", "special to"],
+                professionals: ["infringe", "infringing", "manner", "whatsoever", "undertakes", "agrees", "party"]
+            },
+            {
+                id: 5,
+                title: "Employment Term.",
+                source: "يجوز لصاحب العمل <span class='term-highlight'>فسخ<span class='term-tooltip'><strong>فسخ (Terminate/Rescind):</strong> To legally cancel or end a contract. MT often outputs 'break'.</span></span> عقد العمل دون إشعار مسبق في حال ارتكاب العامل <span class='term-highlight'>خطأ جسيماً<span class='term-tooltip'><strong>خطأ جسيماً (Gross Misconduct):</strong> Unacceptable or improper behavior of a severe degree. MT literalizes this to 'huge error'.</span></span>.",
+                rawMT: "It is permissible to the owner of the work to break the contract of the work without before warning in the state of the worker making a huge error.",
+                coreConcepts: ["contract", "work", "employ"],
+                criticalArtifacts: ["huge error"],
+                fluencyArtifacts: ["owner of the work", "break the contract", "before warning", "state of the worker"],
+                professionals: ["employer", "terminate", "rescind", "gross misconduct", "gross negligence", "may", "prior notice", "employee"]
+            },
+            {
+                id: 6,
+                title: "Arbitration",
+                source: "<span class='term-highlight'>يحال<span class='term-tooltip'><strong>يحال (Referred/Submitted):</strong> The formal act of sending a dispute to an arbitration body or court. MT uses 'transferred'.</span></span> أي خلاف حول تفسير أو تنفيذ هذا العقد إلى التحكيم وفقاً لقواعد <span class='term-highlight'>غرفة التجارة الدولية<span class='term-tooltip'><strong>غرفة التجارة الدولية (ICC):</strong> International Chamber of Commerce, a globally recognized arbitration institution. MT literalizes to 'International Trade Room'.</span></span>.",
+                rawMT: "It is transferred any difference around the explaining or the doing of this contract to the judging according to the bases of the International Trade Room.",
+                coreConcepts: ["contract", "international", "trade", "commerce"],
+                criticalArtifacts: ["transferred", "trade room", "the judging"],
+                fluencyArtifacts: ["difference around", "the explaining", "the doing of"],
+                professionals: ["interpretation", "referred", "submitted", "chamber of commerce", "dispute", "arbitration"]
+            }
+        ];
+
+        let currentIdx = 0;
+        let mode = 'light';
+        let startTime = null;
+        let keystrokes = 0;
+        let timerInterval = null;
+        let timerStarted = false;
+
+        function goToSegmentSelection() {
+            document.getElementById('landing-page').classList.add('hidden');
+            document.getElementById('workshop-interface').classList.add('hidden');
+            document.getElementById('segment-selection-page').classList.remove('hidden');
+            
+            const grid = document.getElementById('segment-grid');
+            grid.innerHTML = '';
+            
+            segments.forEach((seg, i) => {
+                const card = document.createElement('div');
+                card.className = "bg-white p-6 rounded-lg border border-slate-200 shadow-sm hover:shadow-md hover:border-slate-300 transition-all cursor-pointer group";
+                card.onclick = () => loadSegment(i);
+                
+                // Remove HTML span tags for the clean list view
+                const cleanSource = seg.source.replace(/<[^>]*>?/gm, '');
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="bg-slate-100 text-slate-500 text-xs font-bold px-2 py-1 rounded">Case 0${i+1}</span>
+                        <svg class="w-5 h-5 text-slate-300 group-hover:text-slate-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-2">${seg.title}</h3>
+                    <p class="text-sm text-slate-500 line-clamp-2 arabic-text ltr-override" style="direction:rtl">${cleanSource}</p>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function backToSegments() {
+            resetEditorState();
+            document.getElementById('workshop-interface').classList.add('hidden');
+            document.getElementById('segment-selection-page').classList.remove('hidden');
+        }
+
+        function loadSegment(index) {
+            currentIdx = index;
+            const seg = segments[currentIdx];
+            
+            document.getElementById('segment-selection-page').classList.add('hidden');
+            document.getElementById('workshop-interface').classList.remove('hidden');
+            
+            document.getElementById('segment-current').innerText = currentIdx + 1;
+            document.getElementById('source-text').innerHTML = seg.source;
+            document.getElementById('raw-mt-view').innerText = seg.rawMT;
+            document.getElementById('editor').value = seg.rawMT;
+            
+            resetEditorState();
+        }
+
+        function startTimer() {
+            if (timerInterval) return;
+            startTime = Date.now();
+            timerInterval = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                const mins = Math.floor(elapsed / 60).toString().padStart(2, '0');
+                const secs = (elapsed % 60).toString().padStart(2, '0');
+                document.getElementById('timer').innerText = `${mins}:${secs}`;
+            }, 1000);
+        }
+
+        document.getElementById('editor').addEventListener('input', () => {
+            if (!timerStarted) { startTimer(); timerStarted = true; }
+        });
+
+        document.getElementById('editor').addEventListener('keydown', (e) => {
+            const isModifier = ['Shift', 'Control', 'Alt', 'Meta', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key);
+            if (!isModifier) {
+                keystrokes++;
+                document.getElementById('k-count').innerText = keystrokes;
+            }
+        });
+
+        function switchMode(newMode) {
+            mode = newMode;
+            const isLight = mode === 'light';
+            
+            document.getElementById('btn-light').className = isLight ? 
+                "px-4 py-1.5 rounded text-xs font-bold bg-white text-slate-800 shadow-sm transition-all tracking-wide" : 
+                "px-4 py-1.5 rounded text-xs font-bold text-slate-500 hover:text-slate-800 transition-all tracking-wide";
+            document.getElementById('btn-full').className = !isLight ? 
+                "px-4 py-1.5 rounded text-xs font-bold bg-white text-slate-800 shadow-sm transition-all tracking-wide" : 
+                "px-4 py-1.5 rounded text-xs font-bold text-slate-500 hover:text-slate-800 transition-all tracking-wide";
+            
+            const guide = document.getElementById('pe-guidelines');
+            if(isLight) {
+                guide.innerHTML = `
+                    <h2 class="text-sm font-bold uppercase tracking-widest mb-3 text-slate-800">Current Task: Light PE</h2>
+                    <p class="text-sm text-slate-600 mb-4 italic leading-relaxed">"Aim for 'good enough'. Fix only errors that distort the meaning. Don't worry about style or flow."</p>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2 text-xs text-slate-700 font-medium"><div class="w-1.5 h-1.5 rounded-full bg-slate-500"></div>Accuracy is Priority #1</div>
+                        <div class="flex items-center gap-2 text-xs text-slate-700 font-medium"><div class="w-1.5 h-1.5 rounded-full bg-slate-500"></div>Minimize keystrokes</div>
+                    </div>`;
+            } else {
+                guide.innerHTML = `
+                    <h2 class="text-sm font-bold uppercase tracking-widest mb-3 text-slate-800">Current Task: Full PE</h2>
+                    <p class="text-sm text-slate-600 mb-4 italic leading-relaxed">"Achieve professional English quality. Fix 'failed in updating' to 'failed to update' and 'problem stays' to 'problem persists'."</p>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2 text-xs text-slate-700 font-medium"><div class="w-1.5 h-1.5 rounded-full bg-slate-500"></div>Fluent English Collocations</div>
+                        <div class="flex items-center gap-2 text-xs text-slate-700 font-medium"><div class="w-1.5 h-1.5 rounded-full bg-slate-500"></div>Professional Tone</div>
+                    </div>`;
+            }
+        }
+
+        function resetEditorState() {
+            const editor = document.getElementById('editor');
+            if (segments[currentIdx]) editor.value = segments[currentIdx].rawMT;
+            editor.readOnly = false;
+            keystrokes = 0;
+            document.getElementById('k-count').innerText = "0";
+            
+            clearInterval(timerInterval);
+            timerInterval = null;
+            timerStarted = false;
+            startTime = null;
+            document.getElementById('timer').innerText = "00:00";
+            document.getElementById('results').classList.add('hidden');
+        }
+
+        function resetEditor() {
+            resetEditorState();
+        }
+
+        function getEditDistance(a, b) {
+            if(a.length == 0) return b.length; 
+            if(b.length == 0) return a.length;
+            var matrix = [];
+            for(var i = 0; i <= b.length; i++){ matrix[i] = [i]; }
+            for(var j = 0; j <= a.length; j++){ matrix[0][j] = j; }
+            for(i = 1; i <= b.length; i++){
+                for(j = 1; j <= a.length; j++){
+                    if(b.charAt(i-1) == a.charAt(j-1)){ matrix[i][j] = matrix[i-1][j-1]; } 
+                    else { matrix[i][j] = Math.min(matrix[i-1][j-1] + 1, Math.min(matrix[i][j-1] + 1, matrix[i-1][j] + 1)); }
+                }
+            }
+            return matrix[b.length][a.length];
+        }
+
+        function submitPE() {
+            const editor = document.getElementById('editor');
+            editor.readOnly = true; 
+            clearInterval(timerInterval);
+
+            if (!startTime) startTime = Date.now();
+            
+            const seg = segments[currentIdx];
+            const userText = editor.value;
+            const distance = getEditDistance(seg.rawMT, userText);
+            
+            document.getElementById('results').classList.remove('hidden');
+
+            const oldWords = seg.rawMT.trim().split(/\s+/);
+            const newWords = userText.trim().split(/\s+/);
+            const added = newWords.filter(w => !oldWords.includes(w)).length;
+            const removed = oldWords.filter(w => !newWords.includes(w)).length;
+            const totalChanges = added + removed;
+            
+            // Diagnostic Logic
+            const t = userText.toLowerCase();
+            
+            const hasCoreConcepts = seg.coreConcepts.some(c => t.includes(c.toLowerCase()));
+            const criticalArtifact = seg.criticalArtifacts.find(a => t.includes(a.toLowerCase()));
+            const fluencyArtifact = seg.fluencyArtifacts.find(a => t.includes(a.toLowerCase()));
+            const containsPro = seg.professionals.some(p => t.includes(p.toLowerCase()));
+            
+            // Check if user fixed fluency artifacts they were supposed to leave alone in Light PE
+            const fixedFluency = seg.fluencyArtifacts.some(a => !t.includes(a.toLowerCase()));
+            
+            let semanticStatus = "";
+            let strategyStatus = "";
+
+            if (!hasCoreConcepts) {
+                semanticStatus = "The translation drops or fundamentally alters core legal concepts from the Arabic source. Semantic adequacy is the non-negotiable baseline for PE. Distorting meaning invalidates the edit, regardless of fluency.";
+            } else if (criticalArtifact) {
+                semanticStatus = "The translation drops or fundamentally alters core legal concepts from the Arabic source. Semantic adequacy is the non-negotiable baseline for PE. Distorting meaning invalidates the edit, regardless of fluency.";
+            } else {
+                semanticStatus = "The core semantic meaning of the Arabic original has been successfully preserved.";
+            }
+
+            if (mode === 'light') {
+                if (!hasCoreConcepts) {
+                    strategyStatus = "Critique: Intervention failed. The core meaning was lost or rewritten too heavily.";
+                } else if (criticalArtifact) {
+                    strategyStatus = `Critique: Your intervention fails Light PE requirements. Critical legal terminology (e.g., '${criticalArtifact}') was not corrected.`;
+                } else if (fixedFluency || distance > 35) {
+                    strategyStatus = "Critique: Your level of intervention exceeds Light PE requirements. You performed stylistic editing and professional polishing, which wastes technical effort in a Light PE context.";
+                } else {
+                    strategyStatus = "Your level of intervention correctly aligns with Light PE requirements. You preserved the meaning without wasting technical effort on unnecessary stylistic polishing.";
+                }
+            } else if (mode === 'full') {
+                if (criticalArtifact || fluencyArtifact) {
+                    const artifactFound = criticalArtifact || fluencyArtifact;
+                    strategyStatus = `Critique: Your intervention falls short of Full PE standards. The output retains unacceptable literalisms (e.g., '${artifactFound}'), resulting in a text that still reads like raw MT.`;
+                } else if (containsPro) {
+                    strategyStatus = "Your intervention successfully aligns with Full PE requirements. Target text demonstrates publishable quality with standard legal terminology and collocations.";
+                } else {
+                    strategyStatus = "Critique: Your intervention is partially effective. While major errors were removed, you missed opportunities to establish definitive professional legal collocations expected in Full PE.";
+                }
+            }
+
+            // Standardized Output String Requested
+            const analysisOutput = `
+                <div class="mb-4 text-slate-800">
+                    In <strong>${mode.toUpperCase()} PE</strong> mode, your technical effort was ${distance} units, consisting of ${totalChanges} word-level changes (${added} added, ${removed} removed).
+                </div>
+                
+                <h4 class="font-bold text-slate-800 mb-1">Semantic Adequacy</h4>
+                <p class="mb-4">${semanticStatus}</p>
+
+                <h4 class="font-bold text-slate-800 mb-1">Strategy Evaluation</h4>
+                <p>${strategyStatus}</p>
+            `;
+
+            document.getElementById('analysis-text').innerHTML = analysisOutput;
+            
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    </script>
+</body>
+</html>
